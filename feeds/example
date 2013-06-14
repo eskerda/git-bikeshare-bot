@@ -1,0 +1,37 @@
+/**
+ * This file is an example on how to export a network in
+ * this piece of shit
+ */
+
+module.exports = function( callback ) {
+    exp_networks = [
+        {
+            name: 'unique_name_of_the_system',
+            latitude: 0.0, //'systems latitude, as a float'
+            longitude: 0.0, //'systems longitude as a float'
+            update: function(update_callback) {
+                // Logic to get some stations
+                stations = [
+                    {
+                        latitude: 0.0, // latitude of this station
+                        longitude: 0.0, // longitude of this station
+                        params: {
+                            some: 'params',
+                            appearing: 'in the balloon',
+                            of: 'this station, for instance',
+                            name: 'Station name',
+                            bikes: 'My bicycles',
+                            slots: 'empty spaces',
+                            timestamp: 'The time I was updated, in UTC+0'
+                        }
+                    }
+                ]
+
+                // now, we can pass back these stations
+                update_callback('unique_name_of_the_system', stations)
+            }
+        }
+    ]
+    // And, here, we pass back the networks from this file, as an array
+    callback(exp_networks)
+}
