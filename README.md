@@ -6,15 +6,19 @@ networks.
 The result of generating these files and keep pushing them on a repo can be
 seen at [bikesharebot/bikesharestats][1].
 
-Most of the bike sharing networks supported on this bot come from the [CityBikes API][2].
+Most of the bike sharing networks supported on this bot come from the 
+[CityBikes API][2].
 
 
 ##Contribute
 
-If you wish to contribute adding support for more networks, there are two options, depending if you wish to contribute to the CityBikes project, or just to this bot.
+If you wish to contribute adding support for more networks, there are two 
+options, depending if you wish to contribute to the CityBikes project, or 
+just to this bot.
 
 ### Contribute to this bot
-To add support for a city directly in this bot, add a new file on the feeds folder.
+To add support for a city directly in this bot, add a new file on the feeds 
+folder.
 
 Here's an example feed:
 ```javascript
@@ -56,10 +60,31 @@ module.exports = function( callback ) {
     callback(exp_networks)
 }
 ```
+Each file gets bootstrapped on startup, so you can put there any logic you 
+need to get your network (or networks).
 
+A network is defined by
+```
+name: a_unique_name
+latitude: float latitude of the city this network supports
+longitude: ditto
+update: it's update function
+```
+
+And an station is defined by
+```
+latitude
+longitude
+params: {
+    <any params you wish to put on a marker>
+}
+```
 
 ### Contribute to PyBikes
-Since there's already support for the CityBikes API, you can just add support for any network not available in the PyBikes library (the lib behind the API). Once we update the library on the server, the data feed will be available on CityBikes, and also for this bot.
+Since there's already support for the CityBikes API, you can just add support 
+for any network not available in the PyBikes library (the lib behind the API). 
+Once we update the library on the server, the data feed will be available on 
+CityBikes, and also for this bot.
 
 We would really enjoy that!
 
