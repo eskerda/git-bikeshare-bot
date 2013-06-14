@@ -33,7 +33,7 @@ fs.readdirSync(config.feed_path).forEach(function (file) {
     })
 })
 
-var check_feeds = function( callback ) {
+function check_feeds(callback) {
     if (feeds.length > 0) {
         setTimeout(function(){check_feeds(callback)}, 100)
     } else {
@@ -41,7 +41,7 @@ var check_feeds = function( callback ) {
     }
 }
 
-var export_file = function(name, stations) {
+function export_file(name, stations) {
     var netpath = path.join(
         config.export_path, name + ".geojson"
     )
@@ -55,7 +55,7 @@ var export_file = function(name, stations) {
     })
 }
 
-var update_network = function(network) {
+function update_network (network) {
     network.update(function(name, stations) {
         console.log("We've got ",name, stations.length,"stations")
         for(var i = 0; i < stations.length; i++) {
@@ -74,13 +74,9 @@ var update_network = function(network) {
     })
 }
 
-var start = function() {
-    check_feeds(function(){
-        console.log("Starting!!")
-        for (var i = 0; i < networks.length; i++) {
-            update_network(networks[i])
-        }
-    })
-}
-
-start()
+check_feeds(function(){
+    console.log("Starting!!")
+    for (var i = 0; i < networks.length; i++) {
+        update_network(networks[i])
+    }
+})

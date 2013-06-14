@@ -3,7 +3,7 @@ var request = require('request')
 var base_url = "http://api.citybik.es"
   , networks_url = base_url + '/networks.json'
 
-var get_networks = function(callback) {
+function get_networks(callback) {
     request.get(networks_url, function(err, resp, body) {
         if (!err && resp.statusCode == 200) {
             callback(err, JSON.parse(body))
@@ -13,7 +13,7 @@ var get_networks = function(callback) {
     })
 }
 
-var get_stations = function(network, callback) {
+function get_stations(network, callback) {
     request.get(network, function(err, resp, body) {
         if (!err && resp.statusCode == 200) {
             callback(err, JSON.parse(body))
@@ -23,7 +23,7 @@ var get_stations = function(network, callback) {
     })
 }
 
-var prepare_station = function(station) {
+function prepare_station (station) {
     // Hack for the CityBikes timestamps
     // being GMT+2 and not indicated
     var date = new Date(station.timestamp)
@@ -41,7 +41,7 @@ var prepare_station = function(station) {
     }
 }
 
-var update_factory = function(network) {
+function update_factory (network) {
     var update = function(callback){
         get_stations(network.url, function (err, stations) {
             var date
@@ -55,7 +55,7 @@ var update_factory = function(network) {
     return update
 }
 
-var export_networks = function(networks, callback) {
+function export_networks (networks, callback) {
     var exp_networks = []
     for (var i = 0; i < networks.length; i++) {
         var network = networks[i]

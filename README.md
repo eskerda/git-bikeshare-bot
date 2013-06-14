@@ -26,7 +26,7 @@ Here's an example feed:
  * this piece of shit
  */
 
-var get_networks = function() {
+function get_networks() {
     // In this part, you would have to do stuff if you need to
     // get more than one network, If the system just have one
     // network, just hard type any values you need
@@ -41,7 +41,7 @@ var get_networks = function() {
     }]
 }
 
-var get_stations = function(callback) {
+function get_stations (callback) {
     // In this method, you should adquire the data from the
     // network, and prepare the stations to be feeded to
     // the exporter. Once done, call the callback.
@@ -68,6 +68,7 @@ module.exports = function(callback) {
     var networks = get_networks()
     callback(networks)
 }
+
 ```
 Each file gets bootstrapped on startup, so you can put there any logic you 
 need to get your network (or networks).
