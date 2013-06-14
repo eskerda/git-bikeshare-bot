@@ -23,47 +23,54 @@ var get_stations = function(network, callback) {
     })
 }
 
-module.exports = function( callback ) {
-    get_networks(function(err, networks){
-        var exp_networks = []
-        for (var i = 0; i < networks.length; i++) {
-            var network = networks[i]
-            exp_networks.push({
-                name: networks[i].name,     // Unique id of this network
-                latitude: networks[i].lat/1E6,  // Latitude of this network
-                longitude: networks[i].lng/1E6, // Longitude of this network
-                update: function( update_callback ) {
-                    var name = this.name
-                    get_stations(this.url, function(err, stations) {
-                        /** Here we would set appropiate attributes
-                            to each station, to be read on updatestats.js
-                            name, latitude, longitude, timestamp, bikes, slots
-                            and then send them back on the callback
-                        **/
-                        clean_stations = []
-                        var date
-                        for (var i = 0; i < stations.length; i++) {
-                            // Hack for the CityBikes timestamps
-                            // being GMT+2 and not indicated
-                            date = new Date(stations[i].timestamp)
-                            date.setHours(date.getHours()-2)
+var prepare_station = function(station) {
+    // Hack for the CityBikes timestamps
+    // being GMT+2 and not indicated
+    var date = new Date(station.timestamp)
+    date.setHours(date.getHours()-2)
 
-                            clean_stations.push({
-                                latitude: stations[i].lat/1E6,
-                                longitude: stations[i].lng/1E6,
-                                params: {
-                                    name: stations[i].name,
-                                    timestamp: date.toISOString(),
-                                    bikes: stations[i].bikes,
-                                    slots: stations[i].free
-                                }
-                            })
-                        }
-                        update_callback(name, clean_stations)
-                    })
-                }.bind(network)
-            })
+    return {
+        latitude: station.lat/1E6,
+        longitude: station.lng/1E6,
+        params: {
+            name: station.name,
+            timestamp: date.toISOString(),
+            bikes: station.bikes,
+            slots: station.free
         }
-        callback(exp_networks)
+    }
+}
+
+var update_factory = function(network) {
+    var update = function(callback){
+        get_stations(network.url, function (err, stations) {
+            var date
+            export_stations = []
+            for (var i = 0; i < stations.length; i++) {
+                export_stations.push(prepare_station(stations[i]))
+            }
+            callback(network.name, export_stations)
+        })
+    }
+    return update
+}
+
+var export_networks = function(networks, callback) {
+    var exp_networks = []
+    for (var i = 0; i < networks.length; i++) {
+        var network = networks[i]
+        exp_networks.push({
+            name: network.name,
+            latitude: network.lat/1E6,
+            longitude: network.lng/1E6,
+            update: update_factory(network)
+        })
+    }
+    callback(exp_networks)
+}
+
+module.exports = function(callback) {
+    get_networks(function(err, networks){
+        export_networks(networks, callback)
     })
 }

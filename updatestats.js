@@ -55,27 +55,30 @@ var export_file = function(name, stations) {
     })
 }
 
+var update_network = function(network) {
+    network.update(function(name, stations) {
+        console.log("We've got ",name, stations.length,"stations")
+        for(var i = 0; i < stations.length; i++) {
+            // Set colours on station markers
+            // if not defined
+            if (typeof stations[i].params['marker-color'] == "undefined") {
+                if (stations[i].params.bikes == 0)
+                    stations[i].params['marker-color'] = colors.red
+                else if (stations[i].params.bikes < 5)
+                    stations[i].params['marker-color'] = colors.yellow
+                else
+                    stations[i].params['marker-color'] = colors.green
+            }
+        }
+        export_file(name, stations)
+    })
+}
+
 var start = function() {
     check_feeds(function(){
-        console.log("Start doin shit!")
+        console.log("Starting!!")
         for (var i = 0; i < networks.length; i++) {
-            networks[i].update(function(name, stations) {
-                console.log("We've got ",name, stations.length,"stations")
-                for(var i = 0; i < stations.length; i++) {
-                    // Set colours on station markers
-                    // if not defined
-                    if (typeof stations[i].params['marker-color'] == "undefined") {
-                        if (stations[i].params.bikes == 0)
-                            stations[i].params['marker-color'] = colors.red
-                        else if (stations[i].params.bikes < 5)
-                            stations[i].params['marker-color'] = colors.yellow
-                        else
-                            stations[i].params['marker-color'] = colors.green
-                    }
-                }
-
-                export_file(name, stations)
-            })
+            update_network(networks[i])
         }
     })
 }
