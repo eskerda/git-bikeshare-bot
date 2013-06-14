@@ -55,28 +55,26 @@ function export_file(name, stations) {
     })
 }
 
-function update_network (network) {
-    network.update(function(name, stations) {
-        console.log("We've got ",name, stations.length,"stations")
-        for(var i = 0; i < stations.length; i++) {
-            // Set colours on station markers
-            // if not defined
-            if (typeof stations[i].params['marker-color'] == "undefined") {
-                if (stations[i].params.bikes == 0)
-                    stations[i].params['marker-color'] = colors.red
-                else if (stations[i].params.bikes < 5)
-                    stations[i].params['marker-color'] = colors.yellow
-                else
-                    stations[i].params['marker-color'] = colors.green
-            }
+function process_network(name, stations) {
+    console.log("We've got ",name, stations.length,"stations")
+    for(var i = 0; i < stations.length; i++) {
+        // Set colours on station markers
+        // if not defined
+        if (typeof stations[i].params['marker-color'] == "undefined") {
+            if (stations[i].params.bikes == 0)
+                stations[i].params['marker-color'] = colors.red
+            else if (stations[i].params.bikes < 5)
+                stations[i].params['marker-color'] = colors.yellow
+            else
+                stations[i].params['marker-color'] = colors.green
         }
-        export_file(name, stations)
-    })
+    }
+    export_file(name, stations)
 }
 
 check_feeds(function(){
     console.log("Starting!!")
     for (var i = 0; i < networks.length; i++) {
-        update_network(networks[i])
+        networks[i].update(process_network)
     }
 })
