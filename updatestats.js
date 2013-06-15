@@ -1,4 +1,4 @@
-var env = process.env.NODE_ENV || 'development';
+var env = process.env.NODE_ENV || 'development'
 
 var fs = require('fs')
   , sys = require('sys')
@@ -12,39 +12,8 @@ var colors = {
     green: "#70E588"
 }
 
-var networks = []
-var feeds = []
-
-/**
- * Bootstrap feeds
- *
- * Really hackish way to make feed loading synchronous..
- * Don't do this, EVER
- *
- */
-
-fs.readdirSync(config.feed_path).forEach(function (file) {
-    feeds.push(file)
-    require(path.join(config.feed_path, file))( function( module_nets ) {
-        for (var i = 0; i < module_nets.length; i++)
-            networks.push(module_nets[i])
-        console.log(file, "loaded")
-        feeds.pop()
-    })
-})
-
-function check_feeds(callback) {
-    if (feeds.length > 0) {
-        setTimeout(function(){check_feeds(callback)}, 100)
-    } else {
-        callback()
-    }
-}
-
 function export_file(name, stations) {
-    var netpath = path.join(
-        config.export_path, name + ".geojson"
-    )
+    var netpath = path.join(config.export_path, name + ".geojson")
     geojson.export_file(netpath, stations, function(err){
         if (err){
             console.log("error writing", netpath)
@@ -72,9 +41,14 @@ function process_network(name, stations) {
     export_file(name, stations)
 }
 
-check_feeds(function(){
+// Bootstrap feeds
+require('./feeds')(config, function(networks){
+    start(networks)
+})
+
+function start(networks){
     console.log("Starting!!")
     for (var i = 0; i < networks.length; i++) {
         networks[i].update(process_network)
     }
-})
+}
