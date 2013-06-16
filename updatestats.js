@@ -12,6 +12,8 @@ var colors = {
     green: "#70E588"
 }
 
+var network_queue = []
+
 function export_file(name, stations) {
     var netpath = path.join(config.export_path, name + ".geojson")
     geojson.export_file(netpath, stations, function(err){
@@ -21,6 +23,7 @@ function export_file(name, stations) {
         } else {
             console.log(name, "geoJSON file updated!")
         }
+        network_queue.pop()
     })
 }
 
@@ -39,6 +42,7 @@ function process_network(name, stations) {
         }
     }
     export_file(name, stations)
+    return
 }
 
 // Bootstrap feeds
@@ -49,6 +53,12 @@ require('./feeds')(config, function(networks){
 function start(networks){
     console.log("Starting!!")
     for (var i = 0; i < networks.length; i++) {
+        network_queue.push(true)
         networks[i].update(process_network)
     }
+    setInterval(function(){
+        if (network_queue.length == 0){
+            process.exit(code = 0)
+        }
+    }, 1000)
 }
