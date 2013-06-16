@@ -43,13 +43,23 @@ function prepare_station (station) {
 
 function update_factory (network) {
     var update = function(callback){
+        var timeout = setTimeout(function(){
+            timeout = null
+            console.log("Timeout on ", network.name)
+            // Trigger error
+            callback(network.name, [])
+        }, 10000)
+
         get_stations(network.url, function (err, stations) {
-            var date
-            export_stations = []
-            for (var i = 0; i < stations.length; i++) {
-                export_stations.push(prepare_station(stations[i]))
+            if (timeout) {
+                clearTimeout(timeout)
+                var date
+                export_stations = []
+                for (var i = 0; i < stations.length; i++) {
+                    export_stations.push(prepare_station(stations[i]))
+                }
+                callback(network.name, export_stations)
             }
-            callback(network.name, export_stations)
         })
     }
     return update
